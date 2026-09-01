@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三狸奴手作烘焙坊 3 Linu Bakery | 日系手作麵包與甜點</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts for Japanese / Traditional Chinese aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: {
+              50: '#FCFBF7',
+              100: '#FAF6ED',
+              200: '#F3EAD7',
+              300: '#E8D7B8',
+            },
+            warmwood: {
+              100: '#EADBC8',
+              500: '#A07855',
+              800: '#5C3D2E',
+            },
+            matcha: {
+              100: '#EBF1E6',
+              500: '#8A9A86',
+              700: '#5A6B56',
+            },
+            catOrange: {
+              100: '#FFEBD9',
+              400: '#F4A261',
+              500: '#E76F51',
+            }
+          },
+          fontFamily: {
+            sans: ['"Zen Maru Gothic"', '"Noto Sans TC"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+      background-color: #FCFBF7;
+      color: #4A3E3D;
+    }
+    .blend-multiply {
+      mix-blend-mode: multiply;
+    }
+    /* Simple custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF6ED;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E8D7B8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A07855;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.92; transform: scale(1.01); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-catOrange-100 selection:text-warmwood-800">
+
+  <!-- ===== 頂部導覽列 ===== -->
+  <header class="sticky top-0 z-50 bg-cream-50/90 backdrop-blur-md border-b border-cream-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- 品牌 Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-12 h-12 rounded-full bg-catOrange-100 flex items-center justify-center border border-catOrange-400/30 shadow-sm group-hover:scale-105 transition-transform">
+          <i data-lucide="cat" class="w-7 h-7 text-catOrange-500"></i>
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-wider text-warmwood-800 block leading-tight">三狸奴手作烘焙坊</span>
+          <span class="text-xs text-matcha-700 tracking-widest font-medium">3 Linu BAKERY</span>
+        </div>
+      </a>
+
+      <!-- 電腦版導覽選單 -->
+      <nav class="hidden md:flex items-center gap-8 font-medium text-warmwood-800">
+        <a href="#about" class="hover:text-catOrange-500 transition-colors flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-4 h-4 text-catOrange-400"></i> 關於貓掌櫃
+        </a>
+        <a href="#products" class="hover:text-catOrange-500 transition-colors flex items-center gap-1">
+          <i data-lucide="croissant" class="w-4 h-4 text-warmwood-500"></i> 每日美味
+        </a>
+        <a href="#schedule" class="hover:text-catOrange-500 transition-colors flex items-center gap-1">
+          <i data-lucide="clock" class="w-4 h-4 text-matcha-500"></i> 出爐時間
+        </a>
+        <a href="#visit" class="hover:text-catOrange-500 transition-colors flex items-center gap-1">
+          <i data-lucide="map-pin" class="w-4 h-4 text-catOrange-500"></i> 門市位置
+        </a>
+      </nav>
+
+      <!-- 右側按鈕: 購物車 & 預約 -->
+      <div class="flex items-center gap-3">
+        <button id="cartBtn" onclick="toggleCartModal()" class="relative p-2.5 rounded-full bg-cream-100 hover:bg-cream-200 text-warmwood-800 transition-colors">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-catOrange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">0</span>
+        </button>
+
+        <button onclick="openBookingModal()" class="hidden sm:flex items-center gap-2 bg-warmwood-800 hover:bg-warmwood-500 text-cream-50 px-4 py-2 rounded-full font-medium transition-colors shadow-sm">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>線上預訂麵包</span>
+        </button>
+
+        <!-- 行動裝置選單按鈕 -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 text-warmwood-800 hover:text-catOrange-500">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 行動裝置下拉選單 -->
+    <div id="mobileMenu" class="hidden md:hidden bg-cream-50 border-b border-cream-200 px-6 py-4 space-y-3">
+      <a href="#about" class="block font-medium text-warmwood-800 hover:text-catOrange-500" onclick="toggleMobileMenu()">關於貓掌櫃</a>
+      <a href="#products" class="block font-medium text-warmwood-800 hover:text-catOrange-500" onclick="toggleMobileMenu()">每日美味</a>
+      <a href="#schedule" class="block font-medium text-warmwood-800 hover:text-catOrange-500" onclick="toggleMobileMenu()">出爐時間</a>
+      <a href="#visit" class="block font-medium text-warmwood-800 hover:text-catOrange-500" onclick="toggleMobileMenu()">門市位置</a>
+      <button onclick="openBookingModal(); toggleMobileMenu()" class="w-full mt-2 bg-warmwood-800 text-cream-50 py-2.5 rounded-full font-medium flex items-center justify-center gap-2">
+        <i data-lucide="calendar" class="w-4 h-4"></i> 線上預訂麵包
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <!-- ===== HERO SECTION 主視覺區 ===== -->
+    <section class="relative bg-gradient-to-b from-cream-100 via-cream-50 to-white py-12 md:py-20 overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-6 space-y-6 text-center lg:text-left z-20">
+            <div class="inline-flex items-center gap-2 bg-matcha-100 text-matcha-700 px-4 py-1.5 rounded-full text-sm font-medium border border-matcha-500/20">
+              <i data-lucide="heart" class="w-4 h-4 fill-matcha-500 text-matcha-500"></i>
+              <span>日式手作 ‧ 天然酵母 ‧ 溫暖揉捏</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-wide text-warmwood-800 leading-tight">
+              狸奴掌櫃的烘焙日常，<br>
+              <span class="text-catOrange-500">烤出剛出爐的幸福香氣。</span>
+            </h1>
+
+            <p class="text-lg text-warmwood-500 leading-relaxed">
+              由奶油長毛貓 錢錢、暹羅貓 GiGi 與折耳貓 Miyabi (咪咪) 三位可愛掌櫃親自督導！採用日本頂級麵粉與發酵奶油，每一口都是柔軟與安心。
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+              <a href="#products" class="bg-catOrange-500 hover:bg-catOrange-400 text-white font-medium px-8 py-3.5 rounded-full shadow-md transition-all flex items-center gap-2 hover:translate-y-[-2px]">
+                <span>探索今日菜單</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+              <a href="#schedule" class="bg-white hover:bg-cream-100 text-warmwood-800 border border-cream-300 font-medium px-6 py-3.5 rounded-full transition-colors flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-matcha-500"></i>
+                <span>出爐時間表</span>
+              </a>
+            </div>
+
+            <!-- 特色標籤 -->
+            <div class="pt-6 border-t border-cream-200 grid grid-cols-3 gap-4 text-center">
+              <div>
+                <span class="block text-xl font-bold text-warmwood-800">100%</span>
+                <span class="text-xs text-warmwood-500">嚴選星野酵母</span>
+              </div>
+              <div>
+                <span class="block text-xl font-bold text-warmwood-800">0 添加</span>
+                <span class="text-xs text-warmwood-500">純天然無防腐</span>
+              </div>
+              <div>
+                <span class="block text-xl font-bold text-warmwood-800">3 位</span>
+                <span class="text-xs text-warmwood-500">可愛貓咪掌櫃</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側主圖（001.png） -->
+          <div class="lg:col-span-6 relative flex justify-center items-center py-4">
+            <div class="relative w-full max-w-[672px] flex justify-center items-center">
+              <!-- 背景裝飾柔光暈 -->
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-catOrange-100/80 rounded-full blur-3xl -z-10"></div>
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-matcha-100/60 rounded-full blur-3xl -z-10"></div>
+
+              <!-- 主插畫圖片 (使用 001.png) -->
+              <div class="relative w-full flex justify-center">
+                <img id="heroMainImg" src="001.png" alt="三狸奴掌櫃巡視麵包籃" class="w-[672px] max-w-full h-auto object-contain blend-multiply filter drop-shadow-md">
+
+                <!-- 懸浮小標籤 -->
+                <div class="absolute -bottom-2 right-2 sm:right-6 bg-white/90 backdrop-blur px-3.5 py-1.5 rounded-2xl shadow-md border border-cream-200 flex items-center gap-2">
+                  <span class="text-base sm:text-lg">🥐</span>
+                  <div>
+                    <p class="text-[9px] sm:text-[10px] text-warmwood-500 font-medium">本日掌櫃推薦</p>
+                    <p class="text-xs font-bold text-warmwood-800">法國AOP製奶油可頌 & 日式手作卡士達丹麥</p>
+                  </div>
+                  <span class="text-[9px] sm:text-[10px] font-bold bg-catOrange-500 text-white px-2 py-0.5 rounded-full ml-1">うまい.ᐟ.ᐟ</span>
+                </div>
+              </div>
+
+              <!-- 懸浮小配件卡片 -->
+              <div class="absolute -top-2 left-2 sm:left-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-2xl shadow-sm border border-cream-200 flex items-center gap-1.5 text-xs font-bold text-warmwood-800">
+                <i data-lucide="paw-print" class="w-3.5 h-3.5 text-catOrange-400"></i>
+                <span>純粹手作</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 1: 三隻貓店長介紹 ===== -->
+    <section id="about" class="py-16 sm:py-24 bg-white relative">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+          <span class="text-sm font-bold text-matcha-700 tracking-wider uppercase bg-matcha-100 px-3 py-1 rounded-full">Meet Our Bakers</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-warmwood-800">認識我們的三位貓掌櫃</h2>
+          <p class="text-warmwood-500">烘焙坊的每一款麵包，都凝結了三位貓掌櫃對品質與美味的堅持。</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- 貓咪 1: 錢錢 -->
+          <div class="bg-cream-50 rounded-3xl p-6 border border-cream-200 hover:border-catOrange-400/50 hover:shadow-lg transition-all flex flex-col justify-between group">
+            <div>
+              <div class="overflow-hidden rounded-2xl mb-5 bg-white p-2">
+                <img src="exec-097fa16d-cc93-443c-971e-549bbb637774.png" alt="奶油長毛折耳貓 錢錢" class="w-full h-56 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300">
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-bold text-warmwood-800">錢 錢</h3>
+                <span class="text-xs bg-warmwood-100 text-warmwood-800 px-2.5 py-1 rounded-full font-medium">總掌櫃</span>
+              </div>
+              <p class="text-xs text-catOrange-500 font-bold mb-3">奶油蘇格蘭折耳貓 ‧ 溫柔完美主義者</p>
+              <p class="text-sm text-warmwood-500 leading-relaxed">
+                負責掌管發酵濕度與揉麵細節，最喜歡待在溫暖的野餐籃邊檢查剛出爐的脆皮法棍。
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-cream-200 text-xs text-warmwood-500 flex items-center justify-between">
+              <span>拿手品項：</span>
+              <span class="font-bold text-warmwood-800">鮮奶吐司 / 日式法棍</span>
+            </div>
+          </div>
+
+          <!-- 貓咪 2: GiGi -->
+          <div class="bg-cream-50 rounded-3xl p-6 border border-cream-200 hover:border-catOrange-400/50 hover:shadow-lg transition-all flex flex-col justify-between group">
+            <div>
+              <div class="overflow-hidden rounded-2xl mb-5 bg-white p-2">
+                <img src="exec-7e178b22-e896-465d-9a74-99c772475070.png" alt="暹羅貓 GiGi" class="w-full h-56 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300">
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-bold text-warmwood-800">Gi Gi</h3>
+                <span class="text-xs bg-matcha-100 text-matcha-700 px-2.5 py-1 rounded-full font-medium">甜點主廚</span>
+              </div>
+              <p class="text-xs text-catOrange-500 font-bold mb-3">優雅暹羅貓 ‧ 香氣尋寶家</p>
+              <p class="text-sm text-warmwood-500 leading-relaxed">
+                對焦糖與可可香氣極度敏銳，工作累了就會蜷縮在乾淨的餐巾上打盹，做夢都在調配濃郁奶油香。
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-cream-200 text-xs text-warmwood-500 flex items-center justify-between">
+              <span>拿手品項：</span>
+              <span class="font-bold text-warmwood-800">奶油可颂 / 歐式小歐包</span>
+            </div>
+          </div>
+
+          <!-- 貓咪 3: Miyabi (咪咪) -->
+          <div class="bg-cream-50 rounded-3xl p-6 border border-cream-200 hover:border-catOrange-400/50 hover:shadow-lg transition-all flex flex-col justify-between group">
+            <div>
+              <div class="overflow-hidden rounded-2xl mb-5 bg-white p-2">
+                <img src="exec-16426d5f-5e0e-4c02-9df2-25a219506c49.png" alt="奶油橘貓 Miyabi" class="w-full h-56 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300">
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-bold text-warmwood-800">Miyabi (咪咪)</h3>
+                <span class="text-xs bg-catOrange-100 text-catOrange-500 px-2.5 py-1 rounded-full font-medium">試吃員 & 快樂大使</span>
+              </div>
+              <p class="text-xs text-catOrange-500 font-bold mb-3">奶油虎斑折耳貓 ‧ 好奇活力派</p>
+              <p class="text-sm text-warmwood-500 leading-relaxed">
+                總是滿滿活力地追著小鳥與小葉子，是烘焙坊的歡樂來源，嚴格把關每一份麵包的彈性與口感！
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-cream-200 text-xs text-warmwood-500 flex items-center justify-between">
+              <span>拿手品項：</span>
+              <span class="font-bold text-warmwood-800">貓咪造型餅乾 / 菠蘿包</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 貓咪日常故事橫幅 -->
+        <div class="mt-12 bg-gradient-to-r from-cream-100 to-matcha-100 rounded-3xl p-6 sm:p-8 border border-cream-200 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+          <div class="w-full md:w-1/2 overflow-hidden flex justify-center items-center">
+            <img src="exec-d0ee6e1d-0745-418c-8001-366ffbbbcdcb.png" alt="三隻貓咪睡在可頌上" class="w-full h-auto max-h-72 object-contain blend-multiply filter drop-shadow-sm">
+          </div>
+          <div class="w-full md:w-1/2 space-y-4">
+            <div class="inline-flex items-center gap-1.5 text-xs font-bold text-warmwood-500 bg-white/80 px-3 py-1 rounded-full border border-cream-200">
+              <i data-lucide="moon" class="w-3.5 h-3.5 text-catOrange-400"></i>
+              <span>烘焙坊的故事</span>
+            </div>
+            <h3 class="text-2xl font-bold text-warmwood-800">蓬鬆得像雲朵一樣的夢</h3>
+            <p class="text-sm text-warmwood-500 leading-relaxed">
+              當夜晚降臨，打烊後的麵包房裡散發著微微的奶油餘溫。三隻貓咪會窩在大可頌麵包造型的軟墊上入睡。據說，夢裡發酵的靈感，就是隔天最受歡迎的限量新品！
+            </p>
+            <div class="pt-2">
+              <span class="text-xs font-bold text-matcha-700 bg-white px-3 py-1.5 rounded-lg border border-matcha-500/20"># 鬆軟美味的秘密</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== SECTION 2: 每日美味菜單 (Products - 全數替換為真實產品照並統一日系風格) ===== -->
+    <section id="products" class="py-16 sm:py-24 bg-cream-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div>
+            <span class="text-sm font-bold text-catOrange-500 tracking-wider uppercase bg-catOrange-100 px-3 py-1 rounded-full">Daily Bakery</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-warmwood-800 mt-2">貓掌櫃的特製菜單</h2>
+          </div>
+
+          <!-- 分類 Filter Tabs -->
+          <div class="flex flex-wrap gap-2" id="categoryTabs">
+            <button onclick="filterCategory('all')" class="cat-tab active bg-warmwood-800 text-cream-50 px-4 py-2 rounded-full text-sm font-medium transition-all">全部品項</button>
+            <button onclick="filterCategory('bread')" class="cat-tab bg-white hover:bg-cream-200 text-warmwood-800 px-4 py-2 rounded-full text-sm font-medium border border-cream-300 transition-all">日式吐司/歐包</button>
+            <button onclick="filterCategory('pastry')" class="cat-tab bg-white hover:bg-cream-200 text-warmwood-800 px-4 py-2 rounded-full text-sm font-medium border border-cream-300 transition-all">可頌/丹麥</button>
+            <button onclick="filterCategory('dessert')" class="cat-tab bg-white hover:bg-cream-200 text-warmwood-800 px-4 py-2 rounded-full text-sm font-medium border border-cream-300 transition-all">貓咪手作甜點</button>
+          </div>
+        </div>
+
+        <!-- 產品列表 Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="productGrid">
+          
+          <!-- Product 1: 生吐司 -->
+          <div class="product-item bread bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner">
+                <img src="生吐司.jpg" alt="北海道極生鮮奶吐司" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-warmwood-800/5 pointer-events-none"></div>
+                <span class="absolute top-3 left-3 bg-matcha-500/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">錢錢 推薦</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">北海道極生鮮奶吐司</h3>
+              <p class="text-xs text-warmwood-500 mb-3">採用 100% 北海道生乳與十勝發酵奶油，質地如雲朵般綿密撕開。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 160</span>
+              <button onclick="addToCart('北海道極生鮮奶吐司', 160)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 2: 可頌 -->
+          <div class="product-item pastry bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner">
+                <img src="可頌.jpg" alt="金黃蜂巢發酵奶油可頌" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-warmwood-800/5 pointer-events-none"></div>
+                <span class="absolute top-3 left-3 bg-catOrange-500/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">人氣 No.1</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">金黃蜂巢發酵奶油可頌</h3>
+              <p class="text-xs text-warmwood-500 mb-3">法國 AOP 奶油多層次折疊，外皮酥脆卡滋，內部蜂巢氣孔飽滿。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 65</span>
+              <button onclick="addToCart('金黃蜂巢發酵奶油可頌', 65)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 3: 瑪德蓮 -->
+          <div class="product-item dessert bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner">
+                <img src="瑪德蓮.jpg" alt="手作香濃瑪德蓮" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-warmwood-800/5 pointer-events-none"></div>
+                <span class="absolute top-3 left-3 bg-warmwood-800/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">Miyabi 研發</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">手作香濃瑪德蓮 (4入)</h3>
+              <p class="text-xs text-warmwood-500 mb-3">微溫享用散發淡淡焦香奶油與內餡果香，經典貝殼造型。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 120</span>
+              <button onclick="addToCart('手作香濃瑪德蓮 (4入)', 120)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 4: 明太子法棍 -->
+          <div class="product-item bread bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner">
+                <img src="明太子法棍.avif" alt="日式明太子石臼法棍" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-warmwood-800/5 pointer-events-none"></div>
+                <span class="absolute top-3 left-3 bg-catOrange-400/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">熱銷爆款</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">日式明太子石臼法棍</h3>
+              <p class="text-xs text-warmwood-500 mb-3">博多明太子特調醬搭配麥香濃郁的低溫發酵法棍，外脆內軟。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 85</span>
+              <button onclick="addToCart('日式明太子石臼法棍', 85)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 5: 卡士達丹麥 -->
+          <div class="product-item pastry bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner p-2">
+                <img src="卡士達丹麥.webp" alt="日式手作卡士達丹麥" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 blend-multiply">
+                <span class="absolute top-3 left-3 bg-matcha-500/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">GiGi 推薦</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">日式手作卡士達丹麥</h3>
+              <p class="text-xs text-warmwood-500 mb-3">酥脆千層丹麥餅皮，裹入滑順香濃的手作卡士達內餡。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 95</span>
+              <button onclick="addToCart('日式手作卡士達丹麥', 95)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product 6: 日式布丁 -->
+          <div class="product-item dessert bg-white rounded-3xl p-5 border border-cream-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="relative overflow-hidden rounded-2xl bg-cream-100 mb-4 h-52 flex items-center justify-center border border-cream-200/60 shadow-inner">
+                <img src="日式布丁.jpg" alt="昭和手作苦甜焦糖布丁" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-warmwood-800/5 pointer-events-none"></div>
+                <span class="absolute top-3 left-3 bg-warmwood-500/90 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">日式職人手作</span>
+              </div>
+              <h3 class="text-lg font-bold text-warmwood-800 mb-1">昭和手作苦甜焦糖布丁</h3>
+              <p class="text-xs text-warmwood-500 mb-3">放山雞蛋與香草籽極致滑順感，搭配手工微苦焦糖液。</p>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-cream-100">
+              <span class="text-lg font-bold text-catOrange-500">NT$ 75</span>
+              <button onclick="addToCart('昭和手作苦甜焦糖布丁', 75)" class="bg-cream-100 hover:bg-catOrange-500 hover:text-white text-warmwood-800 p-2.5 rounded-full transition-colors">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== SECTION 3: 出爐時間表 (Schedule - 結合貓掌櫃特色與動態時間) ===== -->
+    <section id="schedule" class="py-16 sm:py-24 bg-white relative">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-xl mx-auto mb-8 space-y-3">
+          <span class="text-sm font-bold text-matcha-700 tracking-wider uppercase bg-matcha-100 px-3 py-1 rounded-full">Freshly Baked Schedule</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-warmwood-800">貓掌櫃專屬 ‧ 出爐時刻表</h2>
+          <p class="text-warmwood-500">抓準剛出爐的黃金 30 分鐘，一鍵鎖定專屬批次烘焙！</p>
+        </div>
+
+        <!-- 即時時間狀態動態顯示列 -->
+        <div id="realtimeStatusBanner" class="mb-8 p-4 rounded-2xl bg-cream-100 border border-cream-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+          <div class="flex items-center gap-2 text-warmwood-800 font-medium">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-catOrange-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-catOrange-500"></span>
+            </span>
+            <span id="currentTimeDisplay">目前時間：載入中...</span>
+          </div>
+          <div id="currentBatchTag" class="text-xs font-bold text-catOrange-500 bg-white px-3 py-1.5 rounded-full border border-catOrange-400/30 shadow-sm">
+            連線今日出爐狀態中
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          
+          <!-- 批次 1: 08:30 (錢錢 總掌櫃督造) -->
+          <div id="batch-1" class="batch-card bg-cream-50 p-6 rounded-3xl border border-cream-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 hover:border-catOrange-400 hover:shadow-md">
+            <div class="flex items-start sm:items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-white p-1 border border-cream-300 flex-shrink-0 shadow-sm">
+                <img src="exec-097fa16d-cc93-443c-971e-549bbb637774.png" alt="錢錢 掌櫃" class="w-full h-full object-cover rounded-xl">
+              </div>
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-2xl font-bold text-warmwood-800">08:30</span>
+                  <span class="batch-badge text-xs font-bold text-warmwood-800 bg-warmwood-100 px-3 py-1 rounded-full">
+                    🐾 錢錢 總掌櫃督造
+                  </span>
+                  <span class="status-indicator hidden text-xs font-bold bg-catOrange-500 text-white px-2.5 py-0.5 rounded-full animate-bounce">
+                    🔥 即將出爐
+                  </span>
+                </div>
+                <h4 class="font-bold text-warmwood-800 text-base">早晨新鮮出爐 ‧ 鮮奶吐司與晨光可頌</h4>
+                <p class="text-xs text-warmwood-500">錢錢掌櫃嚴格控溫，濃郁奶香開啟活力早晨。</p>
+              </div>
+            </div>
+
+            <div class="w-full md:w-auto flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-cream-200">
+              <span class="text-xs font-medium text-warmwood-500">適用取貨: 08:30 - 11:00</span>
+              <button onclick="openBookingModal('08:30 - 11:00')" class="bg-warmwood-800 hover:bg-catOrange-500 text-white px-4 py-2.5 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>預訂此批次</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 批次 2: 11:30 (GiGi 主廚推薦) -->
+          <div id="batch-2" class="batch-card bg-cream-50 p-6 rounded-3xl border border-cream-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 hover:border-catOrange-400 hover:shadow-md">
+            <div class="flex items-start sm:items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-white p-1 border border-cream-300 flex-shrink-0 shadow-sm">
+                <img src="exec-7e178b22-e896-465d-9a74-99c772475070.png" alt="GiGi 主廚" class="w-full h-full object-cover rounded-xl">
+              </div>
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-2xl font-bold text-warmwood-800">11:30</span>
+                  <span class="batch-badge text-xs font-bold text-matcha-700 bg-matcha-100 px-3 py-1 rounded-full">
+                    🐾 GiGi 主廚推薦
+                  </span>
+                  <span class="status-indicator hidden text-xs font-bold bg-catOrange-500 text-white px-2.5 py-0.5 rounded-full animate-bounce">
+                    🔥 即將出爐
+                  </span>
+                </div>
+                <h4 class="font-bold text-warmwood-800 text-base">午餐歐式午宴 ‧ 明太子法棍與堅果歐包</h4>
+                <p class="text-xs text-warmwood-500">GiGi 主廚調配秘製醬汁，麥香與鮮香極致融合。</p>
+              </div>
+            </div>
+
+            <div class="w-full md:w-auto flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-cream-200">
+              <span class="text-xs font-medium text-warmwood-500">適用取貨: 11:30 - 14:00</span>
+              <button onclick="openBookingModal('11:30 - 14:00')" class="bg-warmwood-800 hover:bg-catOrange-500 text-white px-4 py-2.5 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>預訂此批次</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 批次 3: 14:30 (Miyabi 試吃員最愛) -->
+          <div id="batch-3" class="batch-card bg-cream-50 p-6 rounded-3xl border border-cream-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 hover:border-catOrange-400 hover:shadow-md">
+            <div class="flex items-start sm:items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-white p-1 border border-cream-300 flex-shrink-0 shadow-sm">
+                <img src="exec-16426d5f-5e0e-4c02-9df2-25a219506c49.png" alt="Miyabi 試吃員" class="w-full h-full object-cover rounded-xl">
+              </div>
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-2xl font-bold text-warmwood-800">14:30</span>
+                  <span class="batch-badge text-xs font-bold text-catOrange-500 bg-catOrange-100 px-3 py-1 rounded-full">
+                    🐾 Miyabi 試吃員最愛
+                  </span>
+                  <span class="status-indicator hidden text-xs font-bold bg-catOrange-500 text-white px-2.5 py-0.5 rounded-full animate-bounce">
+                    🔥 即將出爐
+                  </span>
+                </div>
+                <h4 class="font-bold text-warmwood-800 text-base">下午茶甜點派對 ‧ 貓咪肉球瑪德蓮與丹麥塔</h4>
+                <p class="text-xs text-warmwood-500">Miyabi 試吃員親自認證，酥脆香甜，完美下午茶神品。</p>
+              </div>
+            </div>
+
+            <div class="w-full md:w-auto flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-cream-200">
+              <span class="text-xs font-medium text-warmwood-500">適用取貨: 14:30 - 18:00</span>
+              <button onclick="openBookingModal('14:30 - 18:00')" class="bg-warmwood-800 hover:bg-catOrange-500 text-white px-4 py-2.5 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>預訂此批次</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== SECTION 4: 門市資訊 & 預訂諮詢 (Visit) ===== -->
+    <section id="visit" class="py-16 sm:py-24 bg-cream-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-6 space-y-6">
+            <span class="text-sm font-bold text-catOrange-500 tracking-wider uppercase bg-white px-3 py-1 rounded-full border border-cream-200">Bakery Location</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-warmwood-800">來坐坐吧</h2>
+            <p class="text-warmwood-500 leading-relaxed">
+              店內設有溫馨的日式座位區，可現場搭配手沖咖啡或宇治抹茶，陪伴您度過溫暖的下午時光。
+            </p>
+
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-white rounded-lg text-catOrange-500 border border-cream-200">
+                  <i data-lucide="map-pin" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h5 class="font-bold text-warmwood-800 text-sm">門市地址</h5>
+                  <p class="text-sm text-warmwood-500">台中市肉球區喵聚巷 520 號 (捷運站步行 3 分鐘)</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-white rounded-lg text-matcha-700 border border-cream-200">
+                  <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h5 class="font-bold text-warmwood-800 text-sm">營業時間</h5>
+                  <p class="text-sm text-warmwood-500">週二至週日 08:30 - 19:30 (每週一固定公休)</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3">
+                <div class="p-2 bg-white rounded-lg text-warmwood-800 border border-cream-200">
+                  <i data-lucide="phone" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h5 class="font-bold text-warmwood-800 text-sm">電話預約與諮詢</h5>
+                  <p class="text-sm text-warmwood-500">(02) 2345-6789</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側相片完整展示 -->
+          <div class="lg:col-span-6 flex flex-col items-center">
+            <div class="w-full relative py-4">
+              <img src="exec-2e9278ef-e825-4919-88b8-b0227058d012.png" alt="三狸奴掌櫃巡視" class="w-full h-auto object-contain blend-multiply filter drop-shadow-sm">
+            </div>
+
+            <!-- 溫馨提示語標籤 -->
+            <div class="w-full bg-white/80 backdrop-blur p-4 rounded-2xl text-center border border-cream-200 shadow-sm mt-2">
+              <p class="text-xs text-warmwood-800 font-bold mb-1">🐾 貓掌櫃巡視小提醒</p>
+              <p class="text-xs text-warmwood-500">每日限量吐司可於前一日使用「線上預訂」留貨，避免現場售罄喔！</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== 頁尾 FOOTER ===== -->
+  <footer class="bg-warmwood-800 text-cream-100 py-12 border-t border-warmwood-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-cream-50 flex items-center justify-center">
+            <i data-lucide="cat" class="w-6 h-6 text-warmwood-800"></i>
+          </div>
+          <div>
+            <span class="text-lg font-bold tracking-wider block">三狸奴手作烘焙坊 3 Linu Bakery</span>
+            <span class="text-xs text-cream-300">日式清新 ‧ 手作質感麵包店</span>
+          </div>
+        </div>
+
+        <div class="text-xs text-cream-300 text-center md:text-right space-y-1">
+          <p>© 2026 3 Linu Bakery. All rights reserved.</p>
+          <p>網站設計風格：日系清新質感 ‧ 奶油溫暖色系</p>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== MODAL 1: 購物車抽屜 (Cart Modal) ===== -->
+  <div id="cartModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity">
+    <div class="fixed inset-y-0 right-0 max-w-md w-full bg-cream-50 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
+      
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-cream-200">
+          <div class="flex items-center gap-2">
+            <i data-lucide="shopping-bag" class="w-5 h-5 text-catOrange-500"></i>
+            <h3 class="text-lg font-bold text-warmwood-800">預訂清單</h3>
+          </div>
+          <button onclick="toggleCartModal()" class="p-1 rounded-full hover:bg-cream-200 text-warmwood-800">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div id="cartItemsContainer" class="py-4 space-y-4">
+          <!-- 購物車清單由 JS 動態生成 -->
+          <p class="text-center text-warmwood-500 text-sm py-8">您的預訂清單還是空的喔！<br>快去挑選貓掌櫃的烘焙麵包吧 🐾</p>
+        </div>
+      </div>
+
+      <div class="border-t border-cream-200 pt-4 space-y-4">
+        <div class="flex justify-between font-bold text-lg text-warmwood-800">
+          <span>預計總金額</span>
+          <span id="cartTotal">NT$ 0</span>
+        </div>
+        <button onclick="checkoutCart()" class="w-full bg-catOrange-500 hover:bg-catOrange-400 text-white font-bold py-3 rounded-full transition-colors flex items-center justify-center gap-2 shadow-sm">
+          <span>前往填寫取貨預約</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== MODAL 2: 線上預訂彈窗 (Booking Modal - 時間與批次對應) ===== -->
+  <div id="bookingModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-cream-200 shadow-2xl relative">
+      <button onclick="closeBookingModal()" class="absolute top-5 right-5 p-1 rounded-full hover:bg-cream-100 text-warmwood-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-matcha-100 rounded-full flex items-center justify-center mx-auto mb-2 text-matcha-700">
+          <i data-lucide="calendar" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-warmwood-800">預約取貨 / 預訂麵包</h3>
+        <p class="text-xs text-warmwood-500 mt-1">預訂後我們將提前為您保留新鮮出爐麵包！</p>
+      </div>
+
+      <form onsubmit="submitBooking(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-warmwood-800 mb-1">您的姓名</label>
+          <input type="text" required placeholder="例如：貓奴小明" class="w-full px-4 py-2.5 rounded-xl bg-cream-50 border border-cream-300 focus:outline-none focus:border-catOrange-400 text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-warmwood-800 mb-1">聯絡電話</label>
+          <input type="tel" required placeholder="0912-345-678" class="w-full px-4 py-2.5 rounded-xl bg-cream-50 border border-cream-300 focus:outline-none focus:border-catOrange-400 text-sm">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-warmwood-800 mb-1">取貨日期</label>
+            <input type="date" id="bookingDateInput" required class="w-full px-4 py-2.5 rounded-xl bg-cream-50 border border-cream-300 focus:outline-none focus:border-catOrange-400 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-warmwood-800 mb-1">取貨時段 (對應出爐批次)</label>
+            <select id="bookingTimeSelect" class="w-full px-4 py-2.5 rounded-xl bg-cream-50 border border-cream-300 focus:outline-none focus:border-catOrange-400 text-sm font-medium">
+              <option value="08:30 - 11:00">08:30 - 11:00 (錢錢 鮮奶吐司/可頌)</option>
+              <option value="11:30 - 14:00">11:30 - 14:00 (GiGi 明太子法棍/歐包)</option>
+              <option value="14:30 - 18:00">14:30 - 18:00 (Miyabi 肉球瑪德蓮/甜點塔)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-warmwood-800 mb-1">備註需求 (例如：吐司切片等)</label>
+          <textarea rows="2" placeholder="是否有特別需求？" class="w-full px-4 py-2.5 rounded-xl bg-cream-50 border border-cream-300 focus:outline-none focus:border-catOrange-400 text-sm"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-warmwood-800 hover:bg-warmwood-500 text-cream-50 font-bold py-3 rounded-xl transition-colors shadow-sm">
+          送出預約申請
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== JavaScript Logic ===== -->
+  <script>
+    // Lucide Icons 初始化
+    lucide.createIcons();
+
+    // 頁面載入後自動更新當前時間與即時出爐高亮標籤
+    window.addEventListener('load', function() {
+      updateRealtimeBakingStatus();
+      // 設定預約日期預設值為今天
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('bookingDateInput');
+      if (dateInput) dateInput.value = today;
+    });
+
+    // 判斷真實時間並高亮顯示目前/下一次出爐批次
+    function updateRealtimeBakingStatus() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const timeInMinutes = hours * 60 + minutes;
+
+      const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      const timeDisplay = document.getElementById('currentTimeDisplay');
+      const bannerTag = document.getElementById('currentBatchTag');
+
+      if (timeDisplay) {
+        timeDisplay.innerText = `目前時間：${timeStr}`;
+      }
+
+      // 重設所有卡片狀態
+      document.querySelectorAll('.batch-card').forEach(card => {
+        card.classList.remove('border-2', 'border-catOrange-500', 'bg-catOrange-50/40', 'shadow-lg', 'scale-[1.01]');
+        const indicator = card.querySelector('.status-indicator');
+        if (indicator) indicator.classList.add('hidden');
+      });
+
+      // 出爐批次時間判定 (以分鐘計)
+      // Batch 1: 08:30 (510 min) - 11:29
+      // Batch 2: 11:30 (690 min) - 14:29
+      // Batch 3: 14:30 (870 min) - 18:00 (1080 min)
+      let activeBatchId = 'batch-3';
+      let statusText = '🔥 下午茶甜點出爐中 (Miyabi 試吃員最愛)';
+
+      if (timeInMinutes < 510) { // 08:30 以前
+        activeBatchId = 'batch-1';
+        statusText = '⏰ 即將迎接 08:30 首批出爐 (錢錢 總掌櫃督造)';
+      } else if (timeInMinutes >= 510 && timeInMinutes < 690) { // 08:30 ~ 11:29
+        activeBatchId = 'batch-1';
+        statusText = '🔥 早晨鮮奶吐司熱烈出爐中 (錢錢 總掌櫃督造)';
+      } else if (timeInMinutes >= 690 && timeInMinutes < 870) { // 11:30 ~ 14:29
+        activeBatchId = 'batch-2';
+        statusText = '🔥 午宴明太子法棍熱烈出爐中 (GiGi 主廚推薦)';
+      } else if (timeInMinutes >= 870 && timeInMinutes <= 1080) { // 14:30 ~ 18:00
+        activeBatchId = 'batch-3';
+        statusText = '🔥 貓咪瑪德蓮下午茶熱烈出爐中 (Miyabi 試吃員最愛)';
+      } else {
+        activeBatchId = 'batch-1';
+        statusText = '🌙 今日烘焙已完售 ‧ 預約明日 08:30 批次';
+      }
+
+      if (bannerTag) {
+        bannerTag.innerText = statusText;
+      }
+
+      const activeCard = document.getElementById(activeBatchId);
+      if (activeCard) {
+        activeCard.classList.add('border-2', 'border-catOrange-500', 'bg-catOrange-50/40', 'shadow-lg', 'scale-[1.01]');
+        const indicator = activeCard.querySelector('.status-indicator');
+        if (indicator) indicator.classList.remove('hidden');
+      }
+    }
+
+    // 購物車狀態
+    let cart = [];
+
+    // 行動選單開關
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+
+    // 菜單類別過濾 (Filter Tabs)
+    function filterCategory(category) {
+      const buttons = document.querySelectorAll('.cat-tab');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-warmwood-800', 'text-cream-50');
+        btn.classList.add('bg-white', 'text-warmwood-800');
+      });
+
+      event.currentTarget.classList.remove('bg-white', 'text-warmwood-800');
+      event.currentTarget.classList.add('bg-warmwood-800', 'text-cream-50');
+
+      const items = document.querySelectorAll('.product-item');
+      items.forEach(item => {
+        if (category === 'all' || item.classList.contains(category)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // 加入購物車
+    function addToCart(title, price) {
+      const existing = cart.find(item => item.title === title);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        cart.push({ title, price, count: 1 });
+      }
+      updateCartUI();
+      toggleCartModal(true); // 自動開啟購物車檢視
+    }
+
+    // 更新購物車 UI
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      const container = document.getElementById('cartItemsContainer');
+      const totalEl = document.getElementById('cartTotal');
+
+      const totalCount = cart.reduce((sum, item) => sum + item.count, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.count), 0);
+
+      if (totalCount > 0) {
+        badge.innerText = totalCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      totalEl.innerText = `NT$ ${totalPrice}`;
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p class="text-center text-warmwood-500 text-sm py-8">您的預訂清單還是空的喔！<br>快去挑選貓掌櫃的烘焙麵包吧 🐾</p>`;
+        return;
+      }
+
+      container.innerHTML = cart.map((item, index) => `
+        <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-cream-200">
+          <div>
+            <h4 class="font-bold text-sm text-warmwood-800">${item.title}</h4>
+            <p class="text-xs text-catOrange-500 font-medium">NT$ ${item.price}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="changeQuantity(${index}, -1)" class="w-7 h-7 rounded-full bg-cream-100 flex items-center justify-center text-warmwood-800 font-bold">-</button>
+            <span class="text-sm font-bold w-4 text-center">${item.count}</span>
+            <button onclick="changeQuantity(${index}, 1)" class="w-7 h-7 rounded-full bg-cream-100 flex items-center justify-center text-warmwood-800 font-bold">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function changeQuantity(index, delta) {
+      cart[index].count += delta;
+      if (cart[index].count <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    // 開啟/關閉購物車 Modal
+    function toggleCartModal(forceOpen = false) {
+      const modal = document.getElementById('cartModal');
+      if (forceOpen) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.toggle('hidden');
+      }
+    }
+
+    // 結帳預約
+    function checkoutCart() {
+      if (cart.length === 0) {
+        alert('購物車還是空的喔！請先挑選麵包。');
+        return;
+      }
+      toggleCartModal();
+      openBookingModal();
+    }
+
+    // 線上預訂 Modal 開關（支援快速自動帶入出爐批次時間）
+    function openBookingModal(targetTimeSlot = null) {
+      const modal = document.getElementById('bookingModal');
+      const timeSelect = document.getElementById('bookingTimeSelect');
+      
+      if (targetTimeSlot && timeSelect) {
+        timeSelect.value = targetTimeSlot;
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    // 送出預約
+    function submitBooking(e) {
+      e.preventDefault();
+      const timeSlot = document.getElementById('bookingTimeSelect').value;
+      alert(`🐾 感謝您的預約！三狸奴貓掌櫃已收到您的訂單！\n預訂取貨批次：【${timeSlot}】\n我們將提前為您保留新鮮出爐的麵包！`);
+      cart = [];
+      updateCartUI();
+      closeBookingModal();
+    }
+  </script>
+</body>
+</html>
